@@ -15,6 +15,8 @@ functions found in a `rules.sla` shell script in your project's root dir.
 Example usage:
 
     ~/Projects/my_project/src/llt/ $ sla test
+    ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
+    Exection of rule 'test' failed with exitcode 2
 
 `sla` searches up the current path until it finds a `rules.sla` file, sources it
 in the shell, and executes the requested shell function. Here's what the
@@ -41,7 +43,7 @@ in the shell, and executes the requested shell function. Here's what the
         flake8 --exclude src/llt --ignore=E501 src/*.py
     }
 
-As you can see, build rules are just plain old shell functions. Depending in
+As you can see, build rules are just plain old shell functions. Depending on
 another rule is as simple as calling it as a normal shell function.
 
 You can list available rules by simply omitting a rule name:
@@ -59,6 +61,8 @@ Since `sla` rules are just plain old shell functions, you don't even need
 `sla` installed to run them!:
 
     ~/Projects/my_project $ bash -c ". rules.sla && test"
+    ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
+    Exection of rule 'test' failed with exitcode 2
 
 That's useful so that people don't need to install the build system you prefer
 just to do a `make install`.
@@ -80,6 +84,28 @@ Here's the output of `--help`, although there's not much to see:
 
 You can use the `--verbose` option to show what your rules are executing.
 Basically the same as doing `set -x` in your script.
+
+### Passing values
+
+You can pass values as environment variables:
+
+    $ export TARGET=/usr/local
+    $ sla install  # installs in /usr/local
+
+or
+
+    TARGET=/usr/local sla install
+
+You can also pass command-line arguments:
+
+    sla install /usr/local
+
+These become available as normal positional arguments in a rule / shell
+function:
+
+    install () {
+        TARGET=$1
+    }
 
 ### Tips and tricks
 

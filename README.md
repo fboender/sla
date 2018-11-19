@@ -6,7 +6,7 @@ GiB of Ruby dependencies for a simple build system? Want to be able to execute
 simple build rules from anywhere in your project tree? Then `sla` is for you!
 
 sla is the Simple Little Automator. It's a tiny shell script that invokes
-functions found in a `rules.sla` shell script in your project's root dir.
+shell functions found in a `rules.sla` script in your project's root dir.
 
 ## Usage
 

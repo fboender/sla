@@ -1,0 +1,21 @@
+#
+# This is a script containing functions that are used as build rules. You can
+# use the Simple Little Automator (https://github.com/fboender/sla.git) to run
+# these rules, or you can run them directly in your shell:
+#
+#   $ bash -c ". rules.sla && test"
+#
+
+test () {
+    # Run 'sla' through the shellcheck linter
+    shellcheck sla
+}
+
+install () {
+    # Install sla
+
+    PREFIX=${PREFIX:-/usr/local}
+    DEST="$PREFIX/bin/sla"
+    env install -m 755 ./sla "$DEST"
+    echo "sla installed in $DEST"
+}

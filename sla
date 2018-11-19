@@ -1,0 +1,166 @@
+#!/bin/bash
+
+VERSION=0.1
+RULES_FILE="rules.sla"
+
+if [ -t 1 ]; then
+    # Our output is not being redirected, so we can use colors.
+    C_RED="\033[1;31m"
+    C_GREEN="\033[1;32m"
+    C_YELLOW="\033[1;33m"
+    C_BLUE="\033[1;34m"
+    C_PURPLE="\033[1;35m"
+    C_CYAN="\033[1;36m"
+    C_WHITE="\033[1;37m"
+    C_RESET="$(tput sgr0)"
+fi
+
+C_EXEC_RULE="$C_WHITE"
+
+#
+# Display debug message if FLAG_DEBUG is set (-d, --debug)
+#
+msg_debug () {
+    [ $FLAG_DEBUG -eq 1 ] && echo "DEBUG: $*" >&2
+}
+
+#
+# Print error message to stderr and exit with code 2
+#
+die () {
+    printf "${C_RED}$*${C_RESET}\n" >&2
+    exit 2
+}
+
+#
+# Display usage message
+#
+usage () {
+    echo "Usage: sla [-hdv] [--version] <rule> [param [param...]]"
+    echo "Simple Little Automator. Find and execute tasks from a shell script."
+    echo
+    echo "Arguments:"
+    echo "  -h, --help    Show this help message"
+    echo "  -d, --debug   Show debug information"
+    echo "  -v, --verbose Verbose output"
+    echo "  --version     Show sla version"
+    echo
+    echo "If no <rule> is specified, lists the available rules"
+    exit 1
+}
+
+#
+# Display version
+#
+version () {
+    echo "$VERSION"
+    exit 1
+}
+
+#
+# Keep going down a directory from the current directory until we find a
+# rules file or reach the root dir. Print the directory containing the rules
+# file.
+#
+find_project_root () {
+    PROJ_ROOT="$(realpath .)"
+    while true; do
+        msg_debug "Testing \"$PROJ_ROOT/$RULES_FILE\""
+        if [ -f "$PROJ_ROOT/$RULES_FILE" ]; then
+            # Found a $RULES_FILE file. Return it
+            msg_debug "$RULES_FILE found at $PROJ_ROOT"
+            echo "$PROJ_ROOT"
+            break
+        elif [ "$PROJ_ROOT" = "/" ]; then
+            # Reached the root dir. Return empty string.
+            echo ""
+            break
+        else
+            # Go one dir up
+            PROJ_ROOT="$(realpath $PROJ_ROOT/..)"
+        fi
+    done
+}
+
+#
+# Print a list of rules found in the rules file
+#
+get_rules () {
+    egrep '^.*\s?\()\s?\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
+}
+
+# List rules found in the rules found
+list_rules () {
+    RULES=$(get_rules)
+    echo "Available rules:"
+    for RULE in $RULES; do
+        echo "  - $RULE"
+    done
+}
+
+
+FLAG_DEBUG=0
+FLAG_VERBOSE=0
+RULE=""
+
+case "$1" in
+    "-h" | "--help")
+        usage
+        ;;
+    "--version")
+        version
+        ;;
+    "-d" | "--debug")
+        FLAG_DEBUG=1
+        shift
+        ;;
+    "-v" | "--verbose")
+        FLAG_VERBOSE=1
+        shift
+        ;;
+    *)
+        ;;
+esac
+
+PROJ_ROOT="$(find_project_root)"
+if [ -z "$PROJ_ROOT" ]; then
+    die "No $RULES_FILE found"
+fi
+
+if [ "$#" = 0 ]; then
+    list_rules
+    exit 1
+fi
+
+RULE="$1"
+shift;
+PARAMS=$*
+
+# Check that the requested rule exists
+get_rules | grep "$RULE" > /dev/null || die "Rule '$RULE' not found"
+
+msg_debug "FLAG_VERBOSE: $FLAG_VERBOSE"
+msg_debug "PROJ_ROOT: $PROJ_ROOT"
+msg_debug "RULE: $RULE"
+msg_debug "PARAMS: $*"
+
+# Run in subshell so get back exit code if execution fails with "set -e"
+(
+    # Jump to project root
+    cd "$PROJ_ROOT"
+
+    # Source the rules file and execute the requested rule
+    . "$PROJ_ROOT/$RULES_FILE"
+
+    if [ "$FLAG_VERBOSE" -eq 1 ]; then
+        # Show all commands being execute
+        set -x
+    fi
+    set -e  # Fail on errors immediately
+    $RULE $*
+)
+EXIT_CODE=$?
+set +x
+if [ $EXIT_CODE -ne 0 ]; then
+    printf "${C_RED}Exection of rule '$RULE' failed with exitcode $EXIT_CODE${C_RESET}\n"
+fi

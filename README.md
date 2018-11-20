@@ -16,7 +16,7 @@ Example usage:
 
     ~/Projects/my_project/src/llt/ $ sla test
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
-    Exection of rule 'test' failed with exitcode 2
+    Exection of rule 'test' failed with exitcode 2. Duration: 0h 0m 1s
 
 `sla` searches up the current path until it finds a `build.sla` file, sources it
 in the shell, and executes the requested shell function. Here's what the
@@ -62,7 +62,7 @@ Since `sla` rules are just plain old shell functions, you don't even need
 
     ~/Projects/my_project $ bash -c ". build.sla && test"
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
-    Exection of rule 'test' failed with exitcode 2
+    Exection of rule 'test' failed with exitcode 2. Duration: 0h 0m 1s
 
 That's useful so that people don't need to install the build system you prefer
 just to do a `make install`.
@@ -114,6 +114,7 @@ execute rules when files change:
 
     $ find ./ -name "*.1.md" | entr sla doc
     Converting sec-diff.1.md
+    Execution of rule 'doc' succeeded with exitcode 0. Duration: 0h 0m 0s
 
 The `doc` rule converts a Markdown file to a manual page. `entr` watches all
 changes to `*.1.md` files in the project, and if any of them change, it

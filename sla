@@ -157,5 +157,5 @@ msg_debug "PARAMS:" "$@"
 EXIT_CODE=$?
 set +x
 if [ $EXIT_CODE -ne 0 ]; then
-    die "Exection of rule '$RULE' failed with exitcode $EXIT_CODE"
+    die "Execution of rule '$RULE' failed with exitcode $EXIT_CODE"
 fi

@@ -6,7 +6,7 @@ GiB of Ruby dependencies for a simple build system? Want to be able to execute
 simple build rules from anywhere in your project tree? Then `sla` is for you!
 
 sla is the Simple Little Automator. It's a tiny shell script that invokes
-shell functions found in a `rules.sla` script in your project's root dir.
+shell functions found in a `build.sla` script in your project's root dir.
 
 ## Usage
 
@@ -18,17 +18,17 @@ Example usage:
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
     Exection of rule 'test' failed with exitcode 2
 
-`sla` searches up the current path until it finds a `rules.sla` file, sources it
+`sla` searches up the current path until it finds a `build.sla` file, sources it
 in the shell, and executes the requested shell function. Here's what the
-`rules.sla` file for the above 'test' rule might look like:
+`build.sla` file for the above 'test' rule might look like:
 
-    ~/Projects/my_project/src/llt/ $ cat ../../rules.sla
+    ~/Projects/my_project/src/llt/ $ cat ../../build.sla
     #
     # This is a script containing functions that are used as build rules. You can
     # use the Simple Little Automator (https://github.com/fboender/sla) to run
     # these rules, or you can run them directly in your shell:
     #
-    #   $ bash -c ". rules.sla && test"
+    #   $ bash -c ". build.sla && test"
     #
 
     clean () {
@@ -60,7 +60,7 @@ You can list available rules by simply omitting a rule name:
 Since `sla` rules are just plain old shell functions, you don't even need
 `sla` installed to run them!:
 
-    ~/Projects/my_project $ bash -c ". rules.sla && test"
+    ~/Projects/my_project $ bash -c ". build.sla && test"
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
     Exection of rule 'test' failed with exitcode 2
 

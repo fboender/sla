@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION=0.1
-RULES_FILE="rules.sla"
+RULES_FILE="build.sla"
 
 if [ -t 1 ]; then
     # Our output is not being redirected, so we can use colors.

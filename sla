@@ -107,7 +107,7 @@ get_rule_desc () {
 # List rules found in the rules found
 #
 list_rules () {
-    RULES=$(get_rules)
+    RULES="$(get_rules)"
     echo "Available rules:"
     for RULE in $RULES; do
         RULE_DESC="$(get_rule_desc "$RULE")"

@@ -7,6 +7,7 @@ if [ -t 1 ]; then
     # Our output is not being redirected, so we can use colors.
     C_RED="\033[1;31m"
     C_GREEN="\033[1;32m"
+    C_WHITE="\033[1;37m"
     C_RESET="$(tput sgr0)"
 fi
 
@@ -89,12 +90,29 @@ get_rules () {
     grep -E '^.*\s?\()\s?\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
 }
 
+#
+# Return the line with the first comment inside a rule
+#
+get_rule_desc () {
+    RULE="$1"
+    DOC_LINE="$(grep -A1 -E "^$RULE\s?\()\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
+
+    if [ \! -z "$DOC_LINE" ]; then
+        echo $DOC_LINE | sed "s/^#[ 	]*//"
+    fi
+}
+
 # List rules found in the rules found
 list_rules () {
     RULES=$(get_rules)
     echo "Available rules:"
     for RULE in $RULES; do
-        echo "  - $RULE"
+        RULE_DESC="$(get_rule_desc "$RULE")"
+        if [ -z "$RULE_DESC" ]; then
+            printf " - ${C_WHITE}%s$C_RESET\n" "$RULE"
+        else
+            printf " - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
+        fi
     done
 }
 

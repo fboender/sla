@@ -50,10 +50,13 @@ You can list available rules by simply omitting a rule name:
 
     $ sla
     Available rules:
-      - doc
-      - clean
-      - test
-      - install
+      - doc: Generate documentation
+      - clean: Clean artifacts and trash from repo
+      - test: Run some code tests
+      - install: Install the program
+
+If a comment is present right after the function definition, it will be used
+as a description for the rule. Only one line is supported.
 
 ### Running rules without `sla`
 

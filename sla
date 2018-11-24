@@ -132,7 +132,7 @@ sec_to_human () {
     echo "$ELAPSED_TIME"
 }
 
-
+# Handle commandline arguments
 FLAG_DEBUG=0
 FLAG_VERBOSE=0
 RULE=""
@@ -159,6 +159,7 @@ while true; do
     esac
 done
 
+# Find the project root (dir where build.sla is)
 PROJ_ROOT="$(find_project_root)"
 if [ -z "$PROJ_ROOT" ]; then
     die "No $RULES_FILE found"
@@ -180,7 +181,8 @@ msg_debug "PROJ_ROOT: $PROJ_ROOT"
 msg_debug "RULE: $RULE"
 msg_debug "PARAMS:" "$@"
 
-# Run in subshell so get back exit code if execution fails with "set -e"
+# Include and run the requested rule. Runs in subshell so get back exit code if
+# execution fails with "set -e"
 TIME_START="$(date +"%s")"
 (
     # Jump to project root
@@ -199,6 +201,8 @@ TIME_START="$(date +"%s")"
 )
 EXIT_CODE=$?
 set +x
+
+# Calculate duration
 TIME_END="$(date +"%s")"
 ELAPSED=$(( TIME_END - TIME_START ))
 ELAPSED_HUMAN="$(sec_to_human $ELAPSED)"

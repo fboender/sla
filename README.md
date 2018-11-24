@@ -1,4 +1,4 @@
-# sla - Simple Little Automator
+# sla - Simple Little Automator 🥗
 
 Tired of Make's moronic syntax and rules? Not working on a project that
 requires incremental compilation? 😭 when you need to install 2.4

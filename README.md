@@ -8,6 +8,8 @@ simple build rules from anywhere in your project tree? Then `sla` is for you!
 sla is the Simple Little Automator. It's a tiny shell script that invokes
 shell functions found in a `build.sla` script in your project's root dir.
 
+![](https://raw.githubusercontent.com/fboender/sla/master/screenshot.png)
+
 ## Usage
 
 ### Example usage
@@ -18,9 +20,10 @@ Example usage:
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
     Exection of rule 'test' failed with exitcode 2. Duration: 0h 0m 1s
 
-`sla` searches up the current path until it finds a `build.sla` file, sources it
-in the shell, and executes the requested shell function. Here's what the
-`build.sla` file for the above 'test' rule might look like:
+`sla` searches up the current path until it finds a `build.sla` file, changes
+to that directory, sources it in the shell, and executes the requested shell
+function. Here's what the `build.sla` file for the above 'test' rule might
+look like:
 
     ~/Projects/my_project/src/llt/ $ cat ../../build.sla
     #
@@ -43,8 +46,9 @@ in the shell, and executes the requested shell function. Here's what the
         flake8 --exclude src/llt --ignore=E501 src/*.py
     }
 
-As you can see, build rules are just plain old shell functions. Depending on
-another rule is as simple as calling it as a normal shell function.
+As you can see, build rules are just plain old shell functions. Creating
+dependencies on other rules is as simple as calling it as a normal shell
+function.
 
 You can list available rules by simply omitting a rule name:
 
@@ -57,6 +61,8 @@ You can list available rules by simply omitting a rule name:
 
 If a comment is present right after the function definition, it will be used
 as a description for the rule. Only one line is supported.
+
+`sla` will stop running as soon as a command returns a non-zero exit code.
 
 ### Running rules without `sla`
 

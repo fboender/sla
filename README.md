@@ -61,6 +61,8 @@ You can list available rules by simply omitting a rule name:
       - test: Run some code tests
       - install: Install the program
 
+Functions that start with an underscore ('`_`') are not shown.
+
 If a comment is present right after the function definition, it will be used
 as a description for the rule. Only one line is supported.
 

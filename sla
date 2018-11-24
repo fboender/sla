@@ -97,12 +97,15 @@ get_rule_desc () {
     RULE="$1"
     DOC_LINE="$(grep -A1 -E "^$RULE\s?\()\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
 
-    if [ \! -z "$DOC_LINE" ]; then
-        echo $DOC_LINE | sed "s/^#[ 	]*//"
+    if [ ! -z "$DOC_LINE" ]; then
+        # shellcheck disable=SC2001
+        echo "$DOC_LINE" | sed "s/^[ 	]*#[ 	]*//"
     fi
 }
 
+#
 # List rules found in the rules found
+#
 list_rules () {
     RULES=$(get_rules)
     echo "Available rules:"
@@ -114,6 +117,19 @@ list_rules () {
             printf " - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
         fi
     done
+}
+
+#
+# Convert seconds to human readable duration (1h 8m 5s)
+#
+sec_to_human () {
+    SECONDS="$1"
+    HOURS=$(( SECONDS / 3600))
+    SECONDS=$(( SECONDS % 3600))
+    MINUTES=$(( SECONDS / 60))
+    SECONDS=$(( SECONDS % 60))
+    ELAPSED_TIME="${HOURS}h ${MINUTES}m ${SECONDS}s"
+    echo "$ELAPSED_TIME"
 }
 
 
@@ -184,15 +200,11 @@ TIME_START="$(date +"%s")"
 EXIT_CODE=$?
 set +x
 TIME_END="$(date +"%s")"
+ELAPSED=$(( TIME_END - TIME_START ))
+ELAPSED_HUMAN="$(sec_to_human $ELAPSED)"
 
-SECONDS=$(( TIME_END - TIME_START ))
-HOURS=$(( SECONDS / 3600))
-SECONDS=$(( SECONDS % 3600))
-MINUTES=$(( SECONDS / 60))
-SECONDS=$(( SECONDS % 60))
-ELAPSED_TIME="${HOURS}h ${MINUTES}m ${SECONDS}s"
 if [ $EXIT_CODE -ne 0 ]; then
-    die "Execution of rule '$RULE' failed with exitcode $EXIT_CODE. Duration: $ELAPSED_TIME"
+    die "Execution of rule '$RULE' failed with exitcode $EXIT_CODE. Duration: $ELAPSED_HUMAN"
 else
-    okay "Execution of rule '$RULE' succeeded with exitcode $EXIT_CODE. Duration: $ELAPSED_TIME"
+    okay "Execution of rule '$RULE' succeeded with exitcode $EXIT_CODE. Duration: $ELAPSED_HUMAN"
 fi

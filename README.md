@@ -6,7 +6,9 @@ GiB of Ruby dependencies for a simple build system? Want to be able to execute
 simple build rules from anywhere in your project tree? Then `sla` is for you!
 
 sla is the Simple Little Automator. It's a tiny shell script that invokes
-shell functions found in a `build.sla` script in your project's root dir.
+shell functions found in a `build.sla` script in your project's root dir. It
+is ideal for smaller projects and projects that don't require compilation,
+such as scripting languages.
 
 ![](https://raw.githubusercontent.com/fboender/sla/master/screenshot.png)
 
@@ -118,6 +120,8 @@ function:
 
 ### Tips and tricks
 
+#### Automatic execution of rules
+
 You can use a tool like [entr](http://entrproject.org/) to automatically
 execute rules when files change:
 
@@ -128,6 +132,17 @@ execute rules when files change:
 The `doc` rule converts a Markdown file to a manual page. `entr` watches all
 changes to `*.1.md` files in the project, and if any of them change, it
 executes `sla doc` to regenerate all man pages.
+
+#### 'install' rule
+
+If you have a rule called "install", and you also want to use the `install`
+unix tool to install software, you'll end up with an endless loop, unless you
+specify that you want to use the system's `install` and not the shell function
+you just wrote. You can use `env` for that:
+
+    install () {
+        env install -m 755 ./sla "$DEST"
+    }
 
 
 ## Installation

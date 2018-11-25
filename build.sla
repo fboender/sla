@@ -8,7 +8,7 @@
 
 test () {
     # Run 'sla' through the shellcheck linter
-    shellcheck sla
+    shellcheck -e SC1117 sla
 }
 
 install () {

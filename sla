@@ -26,7 +26,7 @@
 VERSION=0.1
 RULES_FILE="build.sla"
 
-if [ -t 1 ] && [ ! -z "$TERM" ]; then
+if [ -t 1 ] && [ ! -z "$TERM" ] && [ "$TERM" != "dumb" ]; then
     # Our output is not being redirected and we have a terminal, so we can use
     # colors.
     C_RED="\033[1;31m"

@@ -26,8 +26,9 @@
 VERSION=0.1
 RULES_FILE="build.sla"
 
-if [ -t 1 ]; then
-    # Our output is not being redirected, so we can use colors.
+if [ -t 1 ] && [ ! -z "$TERM" ]; then
+    # Our output is not being redirected and we have a terminal, so we can use
+    # colors.
     C_RED="\033[1;31m"
     C_GREEN="\033[1;32m"
     C_WHITE="\033[1;37m"

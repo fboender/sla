@@ -75,7 +75,6 @@ Since `sla` rules are just plain old shell functions, you don't even need
 
     ~/Projects/my_project $ bash -c ". build.sla && test"
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
-    Exection of rule 'test' failed with exitcode 2. Duration: 0h 0m 1s
 
 That's useful so that people don't need to install the build system you prefer
 just to do a `make install`.

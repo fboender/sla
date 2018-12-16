@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set +x
+
 # sla: the Simple Little Automator.
 #
 # A replacement for 'make' for projects that don't require incremental
@@ -111,7 +113,7 @@ find_project_root () {
 # Print a list of rules found in the rules file
 #
 get_rules () {
-    grep -E '^[^_].*\s?\()\s?\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
+    grep -E '^[^_ ]?\w*\s+\(\s*\)\s*\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
 }
 
 #
@@ -119,7 +121,7 @@ get_rules () {
 #
 get_rule_desc () {
     RULE="$1"
-    DOC_LINE="$(grep -A1 -E "^$RULE\s?\()\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
+    DOC_LINE="$(grep -A1 -E "^$RULE\s?\(\)\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
 
     if [ ! -z "$DOC_LINE" ]; then
         # shellcheck disable=SC2001

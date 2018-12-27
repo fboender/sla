@@ -67,10 +67,10 @@ usage () {
     echo "Simple Little Automator. Find and execute tasks from a shell script."
     echo
     echo "Arguments:"
-    echo "  -h, --help    Show this help message"
-    echo "  -d, --debug   Show debug information"
-    echo "  -v, --verbose Verbose output"
-    echo "  --version     Show sla version"
+    echo "  -h, --help      Show this help message"
+    echo "  -d, --debug     Show debug information"
+    echo "  -v, --verbose   Verbose output"
+    echo "  -V, --version   Show sla version"
     echo
     echo "If no <rule> is specified, lists the available rules"
     exit 1
@@ -80,7 +80,7 @@ usage () {
 # Display version
 #
 version () {
-    echo "$VERSION"
+    echo "v$VERSION"
     exit 1
 }
 
@@ -168,7 +168,7 @@ while true; do
         "-h" | "--help")
             usage
             ;;
-        "--version")
+        "-V"|"--version")
             version
             ;;
         "-d" | "--debug")

@@ -12,11 +12,41 @@ such as scripting languages.
 
 ![](https://raw.githubusercontent.com/fboender/sla/master/screenshot.png)
 
+## Why?
+
+Every task running / build system I've researched is either for a specific
+language, too large or complicated or uses declarative style build rules.
+Declarative rules are very limited in their capabilities. It's often not even
+possible, or very awkward, to do loops, which immediately leads to the
+creation of helper shell scripts. The build tool then becomes nothing more
+than a wrapper around those scripts. So why not use shell scripts right away?
+That's what Sla does.
+
+Using shell scripting has several benefits:
+
+* It's not limited to a single language. Most projects don't just need to
+  compile code. They also need to setup projects, run tests, generate
+  documentation, etc. Interpreted languages don't require incremental builds
+  at all, making most build systems' core functionality useless.
+* It's cross-platform, so it will run everywhere.
+* It's powerful. You can script basically anything.
+* You don't even need Sla installed. You can run build rules directly through
+  the shell. Sla is just a simple convenient wrapper.
+* It's easy to call other build systems such as Make through sla, so we don't
+  lose any functionality such as incremental builds.
+
+Additionally, Sla has some benefits of its own:
+
+* It allows you to list the available rules, something Make still can't do
+  properly after 43 years.
+* You can run target rules from anywhere in your project.
+* Sla automatically times your builds.
+
 ## Usage
 
 ### Example usage
 
-Example usage:
+Here's an example of running `sla` with the `test` rule:
 
     ~/Projects/my_project/src/llt/ $ sla test
     ./src/tools.py:25:80: E501 line too long (111 > 79 characters)
@@ -66,7 +96,13 @@ Functions that start with an underscore ('`_`') are not shown.
 If a comment is present right after the function definition, it will be used
 as a description for the rule. Only one line is supported.
 
-`sla` will stop running as soon as a command returns a non-zero exit code.
+`sla` will stop running as soon as a command returns a non-zero exit code. You
+can turn this off by wrapping a block of code with `set +e` statements:
+
+    set +e
+    # these commands won't cause Sla to stop if their exit codes are != 0
+    rm nonexisting
+    set -e
 
 ### Running rules without `sla`
 
@@ -118,6 +154,29 @@ function:
     install () {
         TARGET=$1
     }
+
+### Dependencies
+
+Creating dependencies is as easy as calling a shell function. In the following
+example, the `test` rule depends on the `lint` rule and the `unittest` rule:
+
+    lint () {
+        # Scan code for common problems
+        flake8 src/*.py
+    }
+
+    unittest () {
+        # Run all unit tests
+        cd src/
+        nosetests
+    }
+
+    test () {
+        # Run all tests
+        lint
+        unittest
+    }
+
 
 ### Tips and tricks
 

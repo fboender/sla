@@ -177,6 +177,17 @@ example, the `test` rule depends on the `lint` rule and the `unittest` rule:
         unittest
     }
 
+If a dependency only needs to be executed once (such as `clean` rules), just
+set a flag in the rule. For example:
+
+    clean () {
+        if [ -z "$CLEANED" ]; then
+            echo "Cleaning"
+            # Your cleaning instructions here.
+            CLEANED=1
+        fi
+    }
+
 
 ### Tips and tricks
 

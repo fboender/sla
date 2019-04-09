@@ -215,6 +215,20 @@ you just wrote. You can use `env` for that:
         env install -m 755 ./sla "$DEST"
     }
 
+#### Bash Autocompletion
+
+To get auto completion for bash, put in your `~/.bashrc`:
+
+    # Complete sla rules
+    _complete_sla_rules()
+    {
+        COMPREPLY=()
+        cur="${COMP_WORDS[COMP_CWORD]}"
+        comp=$(sla 2>/dev/null | grep "^ -" | sed "s/^ - \([^:]*\).*/\1/")
+        COMPREPLY=( $(compgen -W "${comp}" -- $cur))
+        return 0
+    }
+    complete -F _complete_sla_rules sla
 
 ## Installation
 

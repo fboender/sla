@@ -113,7 +113,7 @@ find_project_root () {
 # Print a list of rules found in the rules file
 #
 get_rules () {
-    grep -E '^[^_ ]?\w*\s+\(\s*\)\s*\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
+    grep -E '^[^#_ ]?\w*\s+\(\s*\)\s*\{' "$PROJ_ROOT/$RULES_FILE" | sed "s/^\(.*\)[[:space:]]*(.*/\\1/"
 }
 
 #

@@ -64,6 +64,7 @@ okay () {
 #
 usage () {
     echo "Usage: sla [-hdv] [--version] <rule> [param [param...]]"
+    echo
     echo "Simple Little Automator. Find and execute tasks from a shell script."
     echo
     echo "Arguments:"

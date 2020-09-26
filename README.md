@@ -59,7 +59,7 @@ Here's the output of `--help`, although there's not much to see:
 
     If no <rule> is specified, lists the available rules.
 
-    Use '/home/fboender/.local/bin/sla <rule> --help' to show a rule's full description.
+    Use 'sla <rule> --help' to show a rule's full description.
 
 You can use the `--verbose` option to show what your rules are executing.
 Basically the same as doing `set -x` in your script.

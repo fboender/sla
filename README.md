@@ -17,7 +17,7 @@ such as scripting languages.
 Every task running / build system I've researched is either for a specific
 language, too large or complicated or uses declarative style build rules.
 Declarative rules are very limited in their capabilities. It's often not even
-possible, or very awkward, to do loops, which immediately leads to the
+possible, or very awkward, to do loops. This immediately leads to the
 creation of helper shell scripts. The build tool then becomes nothing more
 than a wrapper around those scripts. So why not use shell scripts right away?
 That's what Sla does.
@@ -39,10 +39,30 @@ Additionally, Sla has some benefits of its own:
 
 * It allows you to list the available rules, something Make still can't do
   properly after 43 years.
+* You can include short and long descriptions / help for build rules.
 * You can run target rules from anywhere in your project.
 * Sla automatically times your builds.
 
 ## Usage
+
+Here's the output of `--help`, although there's not much to see:
+
+    Usage: sla [-hdv] [--version] <rule> [param [param...]]
+
+    Simple Little Automator. Find and execute tasks from a shell script.
+
+    Arguments:
+      -h, --help      Show this help message
+      -d, --debug     Show debug information
+      -v, --verbose   Verbose output
+      -V, --version   Show sla version
+
+    If no <rule> is specified, lists the available rules.
+
+    Use '/home/fboender/.local/bin/sla <rule> --help' to show a rule's full description.
+
+You can use the `--verbose` option to show what your rules are executing.
+Basically the same as doing `set -x` in your script.
 
 ### Example usage
 
@@ -78,9 +98,11 @@ look like:
         flake8 --exclude src/llt --ignore=E501 src/*.py
     }
 
-As you can see, build rules are just plain old shell functions. Creating
-dependencies on other rules is as simple as calling it as a normal shell
-function.
+As you can see, build rules are just plain old shell functions. Sla used bash,
+which should be available just about everywhere.
+
+Creating dependencies on other rules is as simple as calling it as a normal
+shell function.
 
 You can list available rules by simply omitting a rule name:
 
@@ -93,16 +115,38 @@ You can list available rules by simply omitting a rule name:
 
 Functions that start with an underscore ('`_`') are not shown.
 
-If a comment is present right after the function definition, it will be used
-as a description for the rule. Only one line is supported.
+### Documenting rules
 
-`sla` will stop running as soon as a command returns a non-zero exit code. You
-can turn this off by wrapping a block of code with `set +e` statements:
+Comments at the start of a function / rule definition are parsed as
+documentation. Take the following rule definition for example:
 
-    set +e
-    # these commands won't cause Sla to stop if their exit codes are != 0
-    rm nonexisting
-    set -e
+    install () {
+        # Install sla 
+        # Install sla to $PREFIX (/usr/local by default).
+        #
+        # You can specify the prefix with an environment variable:
+        # 
+        #     $ PREFIX=/usr sla install
+
+        # Set the prefix
+        PREFIX=${PREFIX:-/usr/local}
+        DEST="$PREFIX/bin/sla"
+        env install -m 755 ./sla "$DEST"
+        echo "sla installed in $DEST"
+    }
+    
+In this case the first line is the short description. It is shown when listing
+the rules. The rest of the comments, up to the empty line, are shown when
+requesting a rule's documentation with `sla <rule> --help`. For example:
+
+    $ sla install --help
+    install: Install sla
+        
+         Install sla to $PREFIX (/usr/local by default).
+        
+         You can specify the prefix with an environment variable:
+         
+             $ PREFIX=/usr sla install
 
 ### Running rules without `sla`
 
@@ -114,24 +158,6 @@ Since `sla` rules are just plain old shell functions, you don't even need
 
 That's useful so that people don't need to install the build system you prefer
 just to do a `make install`.
-
-### Full usage
-
-Here's the output of `--help`, although there's not much to see:
-
-    Usage: sla [-hdv] [--version] <rule> [param [param...]]
-    Simple Little Automator. Find and execute tasks from a shell script.
-
-    Arguments:
-      -h, --help    Show this help message
-      -d, --debug   Show debug information
-      -v, --verbose Verbose output
-      --version     Show sla version
-
-    If no <rule> is specified, lists the available rules
-
-You can use the `--verbose` option to show what your rules are executing.
-Basically the same as doing `set -x` in your script.
 
 ### Passing values
 
@@ -190,6 +216,16 @@ set a flag in the rule. For example:
 
 
 ### Tips and tricks
+
+#### Disabling strictness
+
+`sla` will stop running as soon as a command returns a non-zero exit code. You
+can turn this off by wrapping a block of code with `set +e` statements:
+
+    set +e
+    # these commands won't cause Sla to stop if their exit codes are != 0
+    rm nonexisting
+    set -e
 
 #### Automatic execution of rules
 

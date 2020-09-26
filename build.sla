@@ -13,7 +13,13 @@ test () {
 
 install () {
     # Install sla
+    # Install sla to $PREFIX (/usr/local by default).
+    #
+    # You can specify the prefix with an environment variable:
+    # 
+    #     $ PREFIX=/usr sla install
 
+    # Set the prefix
     PREFIX=${PREFIX:-/usr/local}
     DEST="$PREFIX/bin/sla"
     env install -m 755 ./sla "$DEST"

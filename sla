@@ -25,7 +25,7 @@ set +x
 #
 # For the full license, see the LICENSE file.
 
-VERSION=1.0
+VERSION=1.1
 RULES_FILE="build.sla"
 
 if [ -t 1 ] && [ ! -z "$TERM" ] && [ "$TERM" != "dumb" ]; then
@@ -73,7 +73,9 @@ usage () {
     echo "  -v, --verbose   Verbose output"
     echo "  -V, --version   Show sla version"
     echo
-    echo "If no <rule> is specified, lists the available rules"
+    echo "If no <rule> is specified, lists the available rules."
+    echo
+    echo "Use '$0 <rule> --help' to show a rule's full description."
     exit 1
 }
 
@@ -120,7 +122,7 @@ get_rules () {
 #
 # Return the line with the first comment inside a rule
 #
-get_rule_desc () {
+get_rule_short_desc () {
     RULE="$1"
     DOC_LINE="$(grep -A1 -E "^$RULE\s?\(\)\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
 
@@ -131,19 +133,35 @@ get_rule_desc () {
 }
 
 #
+# Return the first lines with comments inside a rule until an empty line is
+# encounted. First line is then stripped.
+#
+get_rule_full_desc () {
+    RULE="$1"
+    FUNC_DEF="$(sed -n "/^${RULE}[[:space:]]\+()[[:space:]]\+{[[:space:]]*$/,/^}$/p" "$PROJ_ROOT/$RULES_FILE")"
+    #FULL_DESC="$(echo "$FUNC_DEF" | sed '1,2d' | sed -n '/^[[:space:]]\+#.*/p;/^[[:space:]]*$/q' | sed "s/^[ 	]*#[ 	]*/aap/")"
+    FULL_DESC="$(echo "$FUNC_DEF" | sed '1,2d' | sed -n '/^[[:space:]]\+#.*/p;/^[[:space:]]*$/q' | sed "s/^[[:space:]]*#//")"
+    echo "$FULL_DESC"
+}
+
+#
 # List rules found in the rules found
 #
 list_rules () {
     RULES="$(get_rules)"
+
     echo "Available rules:"
+    echo
     for RULE in $RULES; do
-        RULE_DESC="$(get_rule_desc "$RULE")"
+        RULE_DESC="$(get_rule_short_desc "$RULE")"
         if [ -z "$RULE_DESC" ]; then
-            printf " - ${C_WHITE}%s$C_RESET\n" "$RULE"
+            printf "  - ${C_WHITE}%s$C_RESET\n" "$RULE"
         else
-            printf " - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
+            printf "  - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
         fi
     done
+    echo
+    echo "Use '$0 <rule> --help' to show a rule's full description."
 }
 
 #
@@ -162,15 +180,18 @@ sec_to_human () {
 # Handle commandline arguments
 FLAG_DEBUG=0
 FLAG_VERBOSE=0
+FLAG_SHOW_RULE_DOC=0
 RULE=""
 
-while true; do
+while [ ! -z "$1" ]; do
     case "$1" in
         "-h" | "--help")
             usage
+            shift
             ;;
         "-V"|"--version")
             version
+            shift
             ;;
         "-d" | "--debug")
             FLAG_DEBUG=1
@@ -181,6 +202,16 @@ while true; do
             shift
             ;;
         *)
+            RULE="$1"
+            shift
+
+            case "$1" in
+                "-h" | "--help")
+                    FLAG_SHOW_RULE_DOC=1
+                    shift
+                    break
+                    ;;
+            esac
             break
             ;;
     esac
@@ -192,13 +223,28 @@ if [ -z "$PROJ_ROOT" ]; then
     die "No $RULES_FILE found"
 fi
 
-if [ "$#" = 0 ]; then
+if [ -z "$RULE" ]; then
+    # List all the rules
     list_rules
     exit 1
 fi
 
-RULE="$1"
-shift;
+if [ "$FLAG_SHOW_RULE_DOC" -eq 1 ]; then
+    # Show rule documentation
+    SHORT_DESC="$(get_rule_short_desc "$RULE")"
+    LONG_DESC="$(get_rule_full_desc "$RULE")"
+
+    if [ -z "$SHORT_DESC" ]; then
+        printf "${C_WHITE}%s${C_RESET}: No description\n" "$RULE"
+    else
+        printf "${C_WHITE}%s${C_RESET}: %s\n" "$RULE" "$SHORT_DESC"
+    fi
+    if [ ! -z "$LONG_DESC" ]; then
+        printf "\n%s\n\n" "$LONG_DESC" | sed "s/^/    /" 
+    fi
+
+    exit 1
+fi
 
 # Check that the requested rule exists
 get_rules | grep "$RULE" > /dev/null || die "Rule '$RULE' not found"

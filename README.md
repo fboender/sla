@@ -43,6 +43,24 @@ Additionally, Sla has some benefits of its own:
 * You can run target rules from anywhere in your project.
 * Sla automatically times your builds.
 
+## Installation
+
+You can install `sla` with itself from the repo.
+
+System-wide:
+
+    git clone https://github.com/fboender/sla.git
+    cd sla
+    sudo ./sla install
+
+Just for your user:
+
+    git clone https://github.com/fboender/sla.git
+    cd sla
+    PREFIX=~/.local ./sla install
+    
+For the above to work, you should have `~/.local/bin` in your PATH.
+
 ## Usage
 
 Here's the output of `--help`, although there's not much to see:
@@ -215,9 +233,7 @@ set a flag in the rule. For example:
     }
 
 
-### Tips and tricks
-
-#### Disabling strictness
+### Disabling strictness
 
 `sla` will stop running as soon as a command returns a non-zero exit code. You
 can turn this off by wrapping a block of code with `set +e` statements:
@@ -227,20 +243,7 @@ can turn this off by wrapping a block of code with `set +e` statements:
     rm nonexisting
     set -e
 
-#### Automatic execution of rules
-
-You can use a tool like [entr](http://entrproject.org/) to automatically
-execute rules when files change:
-
-    $ find ./ -name "*.1.md" | entr sla doc
-    Converting sec-diff.1.md
-    Execution of rule 'doc' succeeded with exitcode 0. Duration: 0h 0m 0s
-
-The `doc` rule converts a Markdown file to a manual page. `entr` watches all
-changes to `*.1.md` files in the project, and if any of them change, it
-executes `sla doc` to regenerate all man pages.
-
-#### 'install' rule
+### 'install' rule
 
 If you have a rule called "install", and you also want to use the `install`
 unix tool to install software, you'll end up with an endless loop, unless you
@@ -251,7 +254,7 @@ you just wrote. You can use `env` for that:
         env install -m 755 ./sla "$DEST"
     }
 
-#### Bash Autocompletion
+### Bash Autocompletion
 
 To get auto completion for bash, put in your `~/.bashrc`:
 
@@ -266,23 +269,18 @@ To get auto completion for bash, put in your `~/.bashrc`:
     }
     complete -F _complete_sla_rules sla
 
-## Installation
+### Automatic execution of rules
 
-You can install `sla` with itself from the repo.
+You can use a tool like [entr](http://entrproject.org/) to automatically
+execute rules when files change:
 
-System-wide:
+    $ find ./ -name "*.1.md" | entr sla doc
+    Converting sec-diff.1.md
+    Execution of rule 'doc' succeeded with exitcode 0. Duration: 0h 0m 0s
 
-    git clone https://github.com/fboender/sla.git
-    cd sla
-    sudo ./sla install
-
-Just for your user:
-
-    git clone https://github.com/fboender/sla.git
-    cd sla
-    PREFIX=~/.local ./sla install
-    
-For the above to work, you should have `~/.local/bin` in your PATH.
+The `doc` rule converts a Markdown file to a manual page. `entr` watches all
+changes to `*.1.md` files in the project, and if any of them change, it
+executes `sla doc` to regenerate all man pages.
 
 ## License
 

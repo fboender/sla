@@ -155,9 +155,9 @@ list_rules () {
     for RULE in $RULES; do
         RULE_DESC="$(get_rule_short_desc "$RULE")"
         if [ -z "$RULE_DESC" ]; then
-            printf "  - ${C_WHITE}%s$C_RESET\n" "$RULE"
+            printf " - ${C_WHITE}%s$C_RESET\n" "$RULE"
         else
-            printf "  - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
+            printf " - ${C_WHITE}%s$C_RESET: %s\n" "$RULE" "$RULE_DESC"
         fi
     done
     echo

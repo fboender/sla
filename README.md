@@ -233,6 +233,25 @@ set a flag in the rule. For example:
     }
 
 
+### Flags
+
+Sla sets various flags when running. For example, if the user runs `sla -v`
+(verbose), the `FLAG_VERBOSE` flag is set to `1`. You can use this in your
+build scripts:
+
+    if [ "$FLAG_VERBOSE" -eq 1 ]; then
+        echo "Additional info"
+    fi
+
+or
+
+    [ "$FLAG_VERBOSE" -eq 1 ] && echo "Additional info"
+
+The following flags are set:
+
+* `FLAG_DEBUG=1`: Show internal sla debugging info
+* `FLAG_VERBOSE=1`: Show build rule execution debugging info
+
 ### Disabling strictness
 
 `sla` will stop running as soon as a command returns a non-zero exit code. You

@@ -161,7 +161,7 @@ list_rules () {
         fi
     done
     echo
-    echo "Use '$0 <rule> --help' to show a rule's full description."
+    echo "Use 'sla <rule> --help' to show a rule's full description."
 }
 
 #

@@ -69,7 +69,7 @@ usage () {
     echo
     echo "Arguments:"
     echo "  -h, --help      Show this help message"
-    echo "  -d, --debug     Show debug information"
+    echo "  -d, --debug     Show internal sla debug information"
     echo "  -v, --verbose   Verbose output"
     echo "  -V, --version   Show sla version"
     echo

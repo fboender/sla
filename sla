@@ -28,7 +28,7 @@ set +x
 VERSION=1.1
 RULES_FILE="build.sla"
 
-if [ -t 1 ] && [ ! -z "$TERM" ] && [ "$TERM" != "dumb" ]; then
+if [ -t 1 ] && [ -n "$TERM" ] && [ "$TERM" != "dumb" ]; then
     # Our output is not being redirected and we have a terminal, so we can use
     # colors.
     C_RED="\033[1;31m"
@@ -126,7 +126,7 @@ get_rule_short_desc () {
     RULE="$1"
     DOC_LINE="$(grep -A1 -E "^$RULE\s?\(\)\s?\{" "$PROJ_ROOT/$RULES_FILE" | grep -E "^[ 	]*#")"
 
-    if [ ! -z "$DOC_LINE" ]; then
+    if [ -n "$DOC_LINE" ]; then
         # shellcheck disable=SC2001
         echo "$DOC_LINE" | sed "s/^[ 	]*#[ 	]*//"
     fi
@@ -183,7 +183,7 @@ FLAG_VERBOSE=0
 FLAG_SHOW_RULE_DOC=0
 RULE=""
 
-while [ ! -z "$1" ]; do
+while [ -n "$1" ]; do
     case "$1" in
         "-h" | "--help")
             usage
@@ -239,7 +239,7 @@ if [ "$FLAG_SHOW_RULE_DOC" -eq 1 ]; then
     else
         printf "${C_WHITE}%s${C_RESET}: %s\n" "$RULE" "$SHORT_DESC"
     fi
-    if [ ! -z "$LONG_DESC" ]; then
+    if [ -n "$LONG_DESC" ]; then
         printf "\n%s\n\n" "$LONG_DESC" | sed "s/^/    /" 
     fi
 

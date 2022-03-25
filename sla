@@ -32,7 +32,7 @@ set +x
 # SOFTWARE.
 
 
-VERSION=1.1
+VERSION=1.3
 RULES_FILE="build.sla"
 
 if [ -t 1 ] && [ -n "$TERM" ] && [ "$TERM" != "dumb" ]; then
@@ -90,7 +90,9 @@ usage () {
 # Display version
 #
 version () {
-    echo "v$VERSION"
+    echo "sla v$VERSION"
+    echo "(C) 2022 Ferry Boender - MIT license"
+    echo "https://github.com/fboender/sla"
     exit 1
 }
 

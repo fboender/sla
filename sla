@@ -238,14 +238,16 @@ RULE_OWNER=$(stat -c "%u" $RULES_FILE)
 RULE_GROUP=$(stat -c "%g" $RULES_FILE)
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
+BAD_PERMS="2367"
 PERMS=$(stat -c "%a" $RULES_FILE)
-WORLD_ACCESS=$(printf "$PERMS" | tail -c 1)
+WORLD_ACCESS=$(printf "%s" "$PERMS" | tail -c 1)
 
 if [ "$RULE_OWNER" -ne "$USER_ID" ] | [ "$RULE_GROUP" -ne "$GROUP_ID" ]; then
     echo "$RULES_FILE owner/group does not match current user. This is a security risk. Aborting." >&2
     exit 253
 fi
-if [ "$WORLD_ACCESS" = "6" -o "$WORLD_ACCESS" = "7" -o "$WORLD_ACCESS" = "3" ]; then
+
+if echo "$BAD_PERMS" | grep "$WORLD_ACCESS" > /dev/null; then
     echo "$RULES_FILE has world writable permissions. This is a security risk. Aborting." >&2
     exit 253
 fi

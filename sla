@@ -32,7 +32,7 @@ set +x
 # SOFTWARE.
 
 
-VERSION=1.3
+VERSION=1.4
 RULES_FILE="build.sla"
 
 if [ -t 1 ] && [ -n "$TERM" ] && [ "$TERM" != "dumb" ]; then

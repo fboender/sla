@@ -232,6 +232,24 @@ if [ -z "$PROJ_ROOT" ]; then
     die "No $RULES_FILE found"
 fi
 
+# Verify that the build.sla is owned by the current user and not writable for
+# others. This probably isn't very POSIX.. but I see no other way.
+RULE_OWNER=$(stat -c "%u" $RULES_FILE)
+RULE_GROUP=$(stat -c "%g" $RULES_FILE)
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+PERMS=$(stat -c "%a" $RULES_FILE)
+WORLD_ACCESS=$(printf "$PERMS" | tail -c 1)
+
+if [ "$RULE_OWNER" -ne "$USER_ID" ] | [ "$RULE_GROUP" -ne "$GROUP_ID" ]; then
+    echo "$RULES_FILE owner/group does not match current user. This is a security risk. Aborting." >&2
+    exit 253
+fi
+if [ "$WORLD_ACCESS" = "6" -o "$WORLD_ACCESS" = "7" -o "$WORLD_ACCESS" = "3" ]; then
+    echo "$RULES_FILE has world writable permissions. This is a security risk. Aborting." >&2
+    exit 253
+fi
+
 if [ -z "$RULE" ]; then
     # List all the rules
     list_rules

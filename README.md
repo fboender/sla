@@ -51,13 +51,13 @@ System-wide:
 
     git clone https://github.com/fboender/sla.git
     cd sla
-    sudo ./sla install
+    sudo install -m 755 sla /usr/local/bin
 
 Just for your user:
 
     git clone https://github.com/fboender/sla.git
     cd sla
-    PREFIX=~/.local ./sla install
+    install -m 755 -D sla ~/.local/bin
     
 For the above to work, you should have `~/.local/bin` in your PATH.
 

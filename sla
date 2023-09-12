@@ -234,12 +234,12 @@ fi
 
 # Verify that the build.sla is owned by the current user and not writable for
 # others. This probably isn't very POSIX.. but I see no other way.
-RULE_OWNER=$(stat -c "%u" $RULES_FILE)
-RULE_GROUP=$(stat -c "%g" $RULES_FILE)
+RULE_OWNER=$(stat -c "%u" "$PROJ_ROOT/$RULES_FILE")
+RULE_GROUP=$(stat -c "%g" "$PROJ_ROOT/$RULES_FILE")
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 BAD_PERMS="2367"
-PERMS=$(stat -c "%a" $RULES_FILE)
+PERMS=$(stat -c "%a" "$PROJ_ROOT/$RULES_FILE")
 WORLD_ACCESS=$(printf "%s" "$PERMS" | tail -c 1)
 
 if [ "$RULE_OWNER" -ne "$USER_ID" ] | [ "$RULE_GROUP" -ne "$GROUP_ID" ]; then
